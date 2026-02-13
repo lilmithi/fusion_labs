@@ -1,0 +1,31 @@
+{
+  "name": "fusion_labs",
+  "module": "apps/api/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --hot apps/api/index.ts",
+    "start": "bun run apps/api/index.ts",
+    "test": "bun test",
+    "typecheck": "bunx tsc --noEmit",
+    "prisma:generate": "bunx --bun prisma generate",
+    "prisma:migrate": "bunx --bun prisma migrate dev",
+    "prisma:migrate:deploy": "bunx --bun prisma migrate deploy",
+    "prisma:push": "bunx --bun prisma db push",
+    "prisma:seed": "bun run prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.4.0",
+    "@prisma/client": "^7.0.0",
+    "bullmq": "^5.12.7",
+    "dotenv": "^17.2.3",
+    "graphql": "^16.10.0",
+    "graphql-yoga": "^5.10.11",
+    "node-cron": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^7.0.0",
+    "typescript": "^5.9.2"
+  }
+}
