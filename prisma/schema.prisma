@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ReviewStatus {
+  Approved
+  Pending
+  Rejected
+}
+
+enum MerchantStatus {
+  Active
+  Pending
+  Disabled
+}
+
+model Outlet {
+  id                        String                     @id @default(cuid())
+  name                      String
+  description               String?
+  isActive                  Boolean                    @default(true)
+  merchantId                String
+  reviewId                  String?                    @unique
+  Merchant                  Merchant                   @relation(fields: [merchantId], references: [id])
+  Review                    Review?                    @relation("OutletReview", fields: [reviewId], references: [id])
+  PaybillOrTills            PaybillOrTill[]
+  CashbackConfigurations    CashbackConfiguration[]
+  ExclusiveOffers           ExclusiveOffer[]
+  OfferEligibilitySnapshots OfferEligibilitySnapshot[]
+
+  @@index([merchantId])
+  @@index([isActive])
+}
+
+model Merchant {
+  id                        String                     @id @default(cuid())
+  businessName              String
+  description               String?
+  status                    MerchantStatus             @default(Active)
+  category                  String
+  LoyaltyProgram            LoyaltyProgram?
+  CashbackConfigurations    CashbackConfiguration[]
+  ExclusiveOffers           ExclusiveOffer[]
+  Outlets                   Outlet[]
+  CustomerTypes             CustomerType[]
+  OfferEligibilitySnapshots OfferEligibilitySnapshot[]
+
+  @@index([status, category])
+}
+
+model CashbackConfiguration {
+  id                         String                      @id @default(cuid())
+  name                       String
+  startDate                  DateTime?
+  endDate                    DateTime?
+  isActive                   Boolean                     @default(true)
+  deletedAt                  DateTime?
+  eligibleCustomerTypes      String[]
+  merchantId                 String
+  reviewId                   String?                     @unique
+  netCashbackBudget          Decimal                     @default(0)
+  usedCashbackBudget         Decimal                     @default(0)
+  Merchant                   Merchant                    @relation(fields: [merchantId], references: [id])
+  Outlets                    Outlet[]
+  Review                     Review?                     @relation("CashbackConfigurationReview", fields: [reviewId], references: [id])
+  CashbackConfigurationTiers CashbackConfigurationTier[]
+
+  @@index([merchantId, isActive, deletedAt])
+}
+
+model CashbackConfigurationTier {
+  id                      String                @id @default(cuid())
+  cashbackConfigurationId String
+  percentage              Decimal
+  isActive                Boolean               @default(true)
+  deletedAt               DateTime?
+  reviewId                String?               @unique
+  CashbackConfiguration   CashbackConfiguration @relation(fields: [cashbackConfigurationId], references: [id])
+  Review                  Review?               @relation("CashbackConfigurationTierReview", fields: [reviewId], references: [id])
+
+  @@index([cashbackConfigurationId, isActive, deletedAt])
+}
+
+model ExclusiveOffer {
+  id                    String    @id @default(cuid())
+  name                  String
+  description           String
+  startDate             DateTime
+  endDate               DateTime
+  isActive              Boolean   @default(true)
+  deletedAt             DateTime?
+  eligibleCustomerTypes String[]
+  merchantId            String?
+  reviewId              String?   @unique
+  netOfferBudget        Decimal   @default(0)
+  usedOfferBudget       Decimal   @default(0)
+  Merchant              Merchant? @relation(fields: [merchantId], references: [id])
+  Outlets               Outlet[]
+  Review                Review?   @relation("ExclusiveOfferReview", fields: [reviewId], references: [id])
+
+  @@index([merchantId, isActive, deletedAt])
+}
+
+model LoyaltyProgram {
+  id                     String                  @id @default(cuid())
+  name                   String
+  isActive               Boolean                 @default(true)
+  merchantId             String?                 @unique
+  reviewId               String?                 @unique
+  pointsUsedInPeriod     Decimal                 @default(0)
+  pointsIssuedLimit      Decimal?
+  Merchant               Merchant?               @relation(fields: [merchantId], references: [id])
+  LoyaltyTiers           LoyaltyTier[]
+  MerchantLoyaltyRewards MerchantLoyaltyReward[]
+  Review                 Review?                 @relation("LoyaltyProgramReview", fields: [reviewId], references: [id])
+
+  @@index([merchantId, isActive])
+}
+
+model LoyaltyTier {
+  id               String         @id @default(cuid())
+  name             String
+  minCustomerType  String
+  isActive         Boolean        @default(true)
+  deletedAt        DateTime?
+  loyaltyProgramId String
+  reviewId         String?        @unique
+  LoyaltyProgram   LoyaltyProgram @relation(fields: [loyaltyProgramId], references: [id])
+  Review           Review?        @relation("LoyaltyTierReview", fields: [reviewId], references: [id])
+
+  @@index([loyaltyProgramId, isActive, deletedAt])
+}
+
+model MerchantLoyaltyReward {
+  id               String         @id @default(cuid())
+  loyaltyProgramId String
+  name             String
+  isActive         Boolean        @default(true)
+  reviewId         String?        @unique
+  LoyaltyProgram   LoyaltyProgram @relation(fields: [loyaltyProgramId], references: [id])
+  Review           Review?        @relation("MerchantLoyaltyRewardReview", fields: [reviewId], references: [id])
+
+  @@index([loyaltyProgramId, isActive])
+}
+
+model CustomerType {
+  id         String   @id @default(cuid())
+  userId     String
+  merchantId String
+  type       String
+  Merchant   Merchant @relation(fields: [merchantId], references: [id])
+
+  @@unique([userId, merchantId])
+  @@index([userId])
+}
+
+model PaybillOrTill {
+  id        String    @id @default(cuid())
+  outletId  String
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  reviewId  String?   @unique
+  Outlet    Outlet    @relation(fields: [outletId], references: [id])
+  Review    Review?   @relation("PaybillOrTillReview", fields: [reviewId], references: [id])
+
+  @@index([outletId, isActive, deletedAt])
+}
+
+model Review {
+  id                              String                     @id @default(cuid())
+  status                          ReviewStatus
+  OutletReview                    Outlet?                    @relation("OutletReview")
+  CashbackConfigurationReview     CashbackConfiguration?     @relation("CashbackConfigurationReview")
+  CashbackConfigurationTierReview CashbackConfigurationTier? @relation("CashbackConfigurationTierReview")
+  ExclusiveOfferReview            ExclusiveOffer?            @relation("ExclusiveOfferReview")
+  LoyaltyProgramReview            LoyaltyProgram?            @relation("LoyaltyProgramReview")
+  LoyaltyTierReview               LoyaltyTier?               @relation("LoyaltyTierReview")
+  MerchantLoyaltyRewardReview     MerchantLoyaltyReward?     @relation("MerchantLoyaltyRewardReview")
+  PaybillOrTillReview             PaybillOrTill?             @relation("PaybillOrTillReview")
+}
+
+model OfferEligibilitySnapshot {
+  id                    String   @id @default(cuid())
+  userId                String
+  outletId              String
+  merchantId            String
+  hasCashback           Boolean  @default(false)
+  hasExclusiveOffer     Boolean  @default(false)
+  hasLoyaltyProgram     Boolean  @default(false)
+  maxCashbackPercentage Decimal?
+  activeOfferTypes      String[]
+  lastComputedAt        DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  Outlet   Outlet   @relation(fields: [outletId], references: [id])
+  Merchant Merchant @relation(fields: [merchantId], references: [id])
+
+  @@unique([userId, outletId])
+  @@index([userId, updatedAt])
+  @@index([userId, hasCashback, hasExclusiveOffer, hasLoyaltyProgram])
+  @@index([merchantId])
+}
