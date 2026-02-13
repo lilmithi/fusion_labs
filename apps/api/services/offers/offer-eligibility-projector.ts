@@ -5,7 +5,7 @@ import type {
   LoyaltyProgram,
   Outlet,
   PrismaClient,
-} from "@prisma/client";
+} from "../../../../generated/prisma/client";
 import {
   hasApprovedReview,
   isBudgetAvailable,

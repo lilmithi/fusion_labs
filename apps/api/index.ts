@@ -1,5 +1,5 @@
 import type { Job } from "bullmq";
-import type { OfferProjectionJobPayload } from "./queue/offer-projection-queue";
+import type { OfferProjectionJobPayload } from "./queue/offer-projection-contracts";
 import "./server";
 import { offerProjectionWorker } from "./workers/offer-projection.worker";
 import { startOfferProjectionCron } from "./workers/offer-projection-cron";

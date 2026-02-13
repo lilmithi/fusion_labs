@@ -1,7 +1,6 @@
-import { PrismaClient, ReviewStatus, MerchantStatus } from "@prisma/client";
+import { ReviewStatus, MerchantStatus } from "../generated/prisma/client";
 import { rebuildOfferSnapshotsForUser } from "../apps/api/services/offers/offer-eligibility-projector";
-
-const prisma = new PrismaClient();
+import { prisma } from "../apps/api/lib/prisma";
 
 const USERS = {
   alice: "user_alice",
@@ -24,7 +23,8 @@ const OUTLETS = {
   sleepyCafeNgong: "outlet_sleepy_cafe_ngong",
 } as const;
 
-const createApprovedReview = () => prisma.review.create({ data: { status: ReviewStatus.Approved } });
+const createApprovedReview = () =>
+  prisma.review.create({ data: { status: ReviewStatus.Approved } });
 
 const createOutletWithPaybill = async (args: {
   outletId: string;
@@ -370,7 +370,11 @@ const seedCustomerTypes = async () => {
       { userId: USERS.alice, merchantId: MERCHANTS.urbanBites, type: "Vip" },
       { userId: USERS.alice, merchantId: MERCHANTS.fitFuel, type: "Regular" },
       { userId: USERS.bob, merchantId: MERCHANTS.urbanBites, type: "New" },
-      { userId: USERS.bob, merchantId: MERCHANTS.gadgetHub, type: "Infrequent" },
+      {
+        userId: USERS.bob,
+        merchantId: MERCHANTS.gadgetHub,
+        type: "Infrequent",
+      },
     ],
   });
 };

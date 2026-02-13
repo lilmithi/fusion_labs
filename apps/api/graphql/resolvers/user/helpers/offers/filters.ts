@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "../../../../../../../generated/prisma/client";
 import type { OffersQueryInput } from "./types";
 
 const SEARCH_FIELDS = ["name", "description", "Merchant.businessName", "Merchant.description"];

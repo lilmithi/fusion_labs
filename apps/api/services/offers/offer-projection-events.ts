@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "../../../../generated/prisma/client";
 import { queueOfferProjection } from "../../queue/offer-projection-queue";
 import { rebuildOfferSnapshotsForUser } from "./offer-eligibility-projector";
 

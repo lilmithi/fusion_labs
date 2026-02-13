@@ -1,8 +1,8 @@
-import type { PrismaClient } from "@prisma/client";
+import type { prisma } from "../lib/prisma";
 import type { Queue } from "bullmq";
 
 export type GraphQLContext = {
-  prisma: PrismaClient;
+  prisma: typeof prisma;
   authSession: {
     userId: string;
   };

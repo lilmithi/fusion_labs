@@ -9,7 +9,7 @@ const yoga = createYoga({
   context: async ({ request }) => {
     // For local/dev usage we accept a header override so you can query offers as different users quickly.
     // If the header is missing just fallback to demo user
-    const userId = request.headers.get("x-user-id") ?? "demo-user";
+    const userId = request.headers.get("x-user-id") ?? "user_alice";
 
     return {
       prisma,

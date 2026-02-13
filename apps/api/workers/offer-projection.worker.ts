@@ -5,16 +5,13 @@ import {
   OFFER_PROJECTION_JOB_REBUILD,
   OFFER_PROJECTION_JOB_RECOMPUTE_USER,
   OFFER_PROJECTION_QUEUE_NAME,
+  type OfferProjectionJobName,
   type OfferProjectionJobPayload,
-} from "../queue/offer-projection-queue";
+} from "../queue/offer-projection-contracts";
 
 const connection = {
   url: process.env.REDIS_URL ?? "redis://127.0.0.1:6379",
 };
-
-type OfferProjectionJobName =
-  | typeof OFFER_PROJECTION_JOB_REBUILD
-  | typeof OFFER_PROJECTION_JOB_RECOMPUTE_USER;
 
 const getImpactedUsers = async (merchantIds?: string[]): Promise<string[]> => {
   const scopedMerchantIds = merchantIds ?? [];

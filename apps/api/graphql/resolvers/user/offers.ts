@@ -1,6 +1,6 @@
-import type { Outlet } from "@prisma/client";
+import type { Outlet } from "../../../../../generated/prisma/client";
 import type { GraphQLContext } from "../../context";
-import { OFFER_PROJECTION_JOB_RECOMPUTE_USER } from "../../../queue/offer-projection-queue";
+import { OFFER_PROJECTION_JOB_RECOMPUTE_USER } from "../../../queue/offer-projection-contracts";
 import { buildOfferSnapshotFilters } from "./helpers/offers/filters";
 import type { OffersQueryInput } from "./helpers/offers/types";
 
